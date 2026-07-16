@@ -1,0 +1,46 @@
+{
+  "records": [
+    {
+      "id": "event-001",
+      "source": "example-calendar",
+      "title": "Project review",
+      "summary": "Review the synthetic launch checklist.",
+      "timestamp": "2026-07-16T07:00:00Z",
+      "status": "confirmed",
+      "enabled": true
+    },
+    {
+      "id": "event-002",
+      "source": "example-calendar",
+      "title": "Canceled: old review",
+      "summary": "This event must not reach the context.",
+      "timestamp": "2026-07-16T06:00:00Z",
+      "status": "confirmed",
+      "enabled": true
+    },
+    {
+      "id": "message-001",
+      "source": "example-inbox",
+      "title": "Synthetic message",
+      "summary": "This is placeholder content only.",
+      "timestamp": "2026-07-15T12:00:00Z",
+      "status": "new",
+      "enabled": true
+    }
+  ],
+  "milestones": [
+    {
+      "id": "sample-review",
+      "title": "Review the synthetic launch checklist",
+      "status": "done"
+    }
+  ],
+  "completion": {
+    "items": {
+      "sample-review": {
+        "status": "open",
+        "label": "Review the synthetic launch checklist"
+      }
+    }
+  }
+}
