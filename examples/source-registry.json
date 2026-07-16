@@ -1,0 +1,24 @@
+{
+  "sources": [
+    {
+      "id": "primary-inbox",
+      "type": "mail",
+      "account": "example@example.invalid",
+      "enabled": false,
+      "freshness_hours": 24
+    },
+    {
+      "id": "shared-calendar",
+      "type": "calendar",
+      "calendar_id": "shared@example.invalid",
+      "enabled": false,
+      "lookahead_days": 30
+    },
+    {
+      "id": "local-metrics",
+      "type": "local_read_only",
+      "enabled": false,
+      "freshness_hours": 24
+    }
+  ]
+}

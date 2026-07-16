@@ -1,0 +1,23 @@
+# Example only. Keep real configuration in a private runtime repository.
+runtime:
+  home: ${HERMES_HOME}
+  timezone: UTC
+
+models:
+  primary:
+    provider: ${PRIMARY_PROVIDER}
+    model: ${PRIMARY_MODEL}
+  auxiliary:
+    provider: ${AUXILIARY_PROVIDER}
+    model: ${AUXILIARY_MODEL}
+
+integrations:
+  enabled: []
+  sources_file: ./source-registry.json
+
+delivery:
+  default_destination: example:non-production
+  require_explicit_approval: true
+
+secrets:
+  provider_key_env: PROVIDER_API_KEY

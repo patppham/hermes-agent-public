@@ -1,0 +1,16 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+auth.json
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite-*
+logs/
+sessions/
+cache/
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
