@@ -28,6 +28,11 @@
       "enabled": true
     }
   ],
+  "task": {
+    "kind": "briefing",
+    "complexity": "medium",
+    "needs_judgment": true
+  },
   "milestones": [
     {
       "id": "sample-review",
