@@ -4,13 +4,16 @@ The runtime layer sits beside the upstream agent. It prepares context, owns loca
 
 ```mermaid
 flowchart LR
-  A[External inputs] --> B[Deterministic projection]
-  B --> C[Bounded context builder]
-  C --> D[Model-driven decision]
-  D --> E[Approved delivery]
-  F[Canonical state] --> B
-  F --> G[Audit and reconciliation]
+  A[External inputs] --> B[01 Observe]
+  B --> C[02 Verify]
+  C --> D[03 Decide]
+  D --> E[04 Act behind approval]
+  E --> F[05 Learn and reconcile]
+  F --> B
+  G[Canonical state] --> B
   G --> F
+  D -. local triage or judgment lane .-> H[Provider boundary]
+  D --> I[Bounded background fan-out]
 ```
 
 ## Boundaries
@@ -29,15 +32,27 @@ Context builders assemble only the fields required by one job. They should prese
 
 ### Model-driven decisions
 
-The model proposes or summarizes within a narrow contract. It should not silently create state, broaden recipients, or turn an observation into a high-stakes recommendation.
+The model proposes or summarizes within a narrow contract. `runtime.loop.run_cycle` accepts an injected decision callback after verification; the callback cannot see records that the context boundary removed. It should not silently create state, broaden recipients, or turn an observation into a high-stakes recommendation.
+
+### Routing
+
+`runtime.routing.choose_lane` labels bounded work as `local` and synthesis-heavy work as `judgment`. The public code does not name or configure a provider. A private deployment can map those lanes to local models, cloud models, or a subagent pool without changing the safety contract.
 
 ### Delivery
 
 Delivery targets and approval language are explicit. Tests use a non-production destination, and scheduled production delivery is exercised only by the scheduler itself.
 
+External action adapters are intentionally outside this package. Browser automation, claims portals, messaging clients, and other side effects should consume an authorized proposal only after their private deployment has performed its own target and credential checks.
+
 ### State
 
 Canonical state is separate from generated projections. Reconciliation jobs repair drift deterministically; they do not become general-purpose planners.
+
+### Outcomes
+
+Each cycle returns a compact outcome summary: fresh signals observed, inputs filtered, proposals made, delivery state, and canonical repairs. This makes “helpful” measurable without retaining message bodies or household records in the public layer.
+
+`runtime.parallel.run_parallel` provides the small fan-out primitive used for independent background work. It caps workers, returns results in stable name order, and reports only exception classes in failures.
 
 ## Public-release rule
 

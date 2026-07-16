@@ -5,8 +5,9 @@ from __future__ import annotations
 import argparse
 import json
 
-from .context import build_context
-from .state import find_repairs, load_json_object
+from .context import parse_timestamp
+from .loop import LoopPolicy, run_cycle
+from .state import load_json_object
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -14,14 +15,27 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--input", required=True, help="synthetic runtime input JSON")
     parser.add_argument("--max-age-hours", type=int, default=24)
     parser.add_argument("--limit", type=int, default=20)
+    parser.add_argument("--now", help="optional ISO timestamp for deterministic demos")
+    parser.add_argument("--approved", action="store_true", help="authorize the synthetic delivery")
+    parser.add_argument("--destination", default="example:non-production")
     args = parser.parse_args(argv)
 
     payload = load_json_object(args.input)
-    context = build_context(
+    now = parse_timestamp(args.now) if args.now else None
+    if args.now and now is None:
+        parser.error("--now must be a valid ISO timestamp")
+    cycle = run_cycle(
         payload.get("records", []),
-        max_age_hours=args.max_age_hours,
-        limit=args.limit,
+        payload.get("milestones", []),
+        payload.get("completion", {}),
+        now=now,
+        task=payload.get("task"),
+        policy=LoopPolicy(
+            destination=args.destination,
+            max_age_hours=args.max_age_hours,
+            context_limit=args.limit,
+        ),
+        approved=args.approved,
     )
-    repairs = find_repairs(payload.get("milestones", []), payload.get("completion", {}))
-    print(json.dumps({"context": context, "repairs": repairs}, indent=2, sort_keys=True))
+    print(json.dumps(cycle, indent=2, sort_keys=True))
     return 0
