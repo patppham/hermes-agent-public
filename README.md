@@ -6,11 +6,10 @@ This is an independent companion project, not an official Hermes distribution. I
 
 ## What is included
 
+- `runtime/` — a dependency-free reference implementation of bounded context building, deterministic state reconciliation, and explicit delivery authorization.
+- `tests/` — standard-library tests for the public runtime layer.
 - `docs/architecture.md` — the runtime boundary and data flow.
-- `examples/config.yaml` — provider and integration placeholders.
-- `examples/cron-jobs.json` — a synthetic scheduled-job shape.
-- `examples/source-registry.json` — a synthetic input registry.
-- `examples/skill.md` — a generic skill contract.
+- `examples/` — provider, job, source, skill, and runtime-input placeholders.
 
 ## Privacy boundary
 
@@ -29,6 +28,15 @@ Every identifier in `examples/` is synthetic. Keep real runtime configuration in
 2. Copy the example shapes into a private runtime repository.
 3. Replace placeholders with local values without committing them.
 4. Keep generated projections, logs, sessions, and account routing private.
+
+Run the sanitized reference runtime locally:
+
+```bash
+python3 -m unittest discover -s tests -v
+python3 -m runtime --input examples/runtime-input.json
+```
+
+The runtime package is intentionally an extraction of safe patterns, not a drop-in replacement for a complete household deployment.
 
 ## Design principles
 
