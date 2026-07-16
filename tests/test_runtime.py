@@ -6,6 +6,8 @@ from pathlib import Path
 
 from runtime.context import build_context
 from runtime.delivery import DeliveryPolicy
+from runtime.loop import LoopPolicy, run_cycle
+from runtime.parallel import run_parallel
 from runtime.state import apply_repairs, atomic_write_json, find_repairs, load_json_object
 
 
@@ -101,6 +103,81 @@ class DeliveryTests(unittest.TestCase):
     def test_empty_destination_is_rejected(self):
         with self.assertRaises(ValueError):
             DeliveryPolicy(" ").authorize(approved=True)
+
+
+class LoopTests(unittest.TestCase):
+    def test_cycle_waits_for_approval_and_reconciles_state(self):
+        records = [
+            {
+                "id": "signal-1",
+                "source": "synthetic-calendar",
+                "title": "Review the launch checklist",
+                "timestamp": "2026-07-16T11:00:00Z",
+            }
+        ]
+        milestones = [{"id": "launch", "title": "Launch checklist", "status": "done"}]
+        completion = {"items": {"launch": {"status": "open"}}}
+
+        cycle = run_cycle(
+            records,
+            milestones,
+            completion,
+            now=NOW,
+            task={"kind": "briefing", "needs_judgment": True},
+        )
+
+        self.assertEqual(cycle["status"], "needs_approval")
+        self.assertEqual(cycle["decide"]["route"]["lane"], "judgment")
+        self.assertEqual(cycle["act"]["status"], "awaiting_approval")
+        self.assertEqual(cycle["act"]["destination"], None)
+        self.assertEqual(cycle["learn"]["repairs"][0]["item_id"], "launch")
+        self.assertEqual(cycle["learn"]["completion"]["items"]["launch"]["status"], "done")
+        self.assertEqual(cycle["outcome"]["signals_observed"], 1)
+
+    def test_cycle_skips_decision_when_no_fresh_signal_exists(self):
+        def should_not_run(snapshot):
+            raise AssertionError(f"decision callback received empty snapshot: {snapshot}")
+
+        cycle = run_cycle(
+            [{"id": "old", "timestamp": "2026-07-14T11:00:00Z"}],
+            [],
+            {"items": {}},
+            now=NOW,
+            decide=should_not_run,
+        )
+
+        self.assertEqual(cycle["status"], "quiet")
+        self.assertFalse(cycle["decide"]["invoked"])
+        self.assertEqual(cycle["outcome"]["delivery"], "quiet")
+
+    def test_approved_cycle_authorizes_but_does_not_execute(self):
+        cycle = run_cycle(
+            [{"id": "signal-1", "timestamp": "2026-07-16T11:00:00Z"}],
+            [],
+            {"items": {}},
+            now=NOW,
+            policy=LoopPolicy(destination="example:non-production"),
+            approved=True,
+        )
+
+        self.assertEqual(cycle["status"], "authorized")
+        self.assertEqual(cycle["act"]["destination"], "example:non-production")
+        self.assertFalse(cycle["act"]["executed"])
+
+
+class ParallelTests(unittest.TestCase):
+    def test_parallel_tasks_have_stable_safe_results(self):
+        results = run_parallel(
+            {
+                "ok": lambda: "synthetic result",
+                "failed": lambda: 1 / 0,
+            },
+            max_workers=2,
+        )
+
+        self.assertEqual(list(results), ["failed", "ok"])
+        self.assertEqual(results["ok"], {"status": "ok", "result": "synthetic result"})
+        self.assertEqual(results["failed"], {"status": "error", "error_type": "ZeroDivisionError"})
 
 
 if __name__ == "__main__":
