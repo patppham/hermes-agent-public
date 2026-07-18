@@ -1,0 +1,163 @@
+{
+  "purpose": "Sanitized inventory of private runtime responsibilities that a public agent may mirror without copying private implementation or data. Path labels are genericized responsibility names, not literal private paths.",
+  "audited_surface_counts": {
+    "private_python_paths": 76,
+    "private_cron_jobs": 16,
+    "private_skill_and_reference_files": 55,
+    "vendored_dependency_files_excluded": true,
+    "path_labels_are_genericized": true
+  },
+  "public_contracts": [
+    {
+      "private_area": "dashboard/fetch_data.py and source adapters",
+      "public_equivalent": "runtime/context.py plus examples/source-registry.json",
+      "handling": "safe-core-and-private-adapter",
+      "notes": "Adapters return bounded records; credentials and source payloads stay private."
+    },
+    {
+      "private_area": "dashboard/state_store.py, reply_reconcile.py, todo_audit.py",
+      "public_equivalent": "runtime/state.py and runtime/loop.py",
+      "handling": "safe-core-and-private-state",
+      "notes": "Canonical state is private; reconciliation logic is shareable."
+    },
+    {
+      "private_area": "daily brief, coaching, horizon, question, and experiment jobs",
+      "public_equivalent": "runtime/loop.py plus prompts/cron/* and skills/*/SKILL.md",
+      "handling": "contract-only",
+      "notes": "Decision callbacks receive verified synthetic context; prompt files preserve behavior without private values or copied records."
+    },
+    {
+      "private_area": "cron prompt field for every scheduled job",
+      "public_equivalent": "cron/jobs.json plus prompts/cron/*.md",
+      "handling": "sanitized-prompt-template",
+      "notes": "All 16 public jobs point to inspectable prompt contracts. Names, dates, recipients, source details, and private routing remain placeholders."
+    },
+    {
+      "private_area": "SOUL.md and .hermes.md",
+      "public_equivalent": "SOUL.md and .hermes.md",
+      "handling": "sanitized-persona-and-guidance",
+      "notes": "The public copies preserve voice, privacy, memory, routing, state, and verification boundaries without household identity or local paths."
+    },
+    {
+      "private_area": "relevant household, dashboard, and integration skills",
+      "public_equivalent": "skills/*/SKILL.md",
+      "handling": "reusable-skill-contracts",
+      "notes": "Public skills cover composition, staged triage, projections, reconciliation, evidence, documents, reminders, architecture, and action gates. Domain-specific plans and corpora stay private."
+    },
+    {
+      "private_area": "dashboard/openrouter_runtime.py and routed model jobs",
+      "public_equivalent": "runtime/routing.py",
+      "handling": "provider-neutral",
+      "notes": "Map local and judgment lanes to providers only in a private config."
+    },
+    {
+      "private_area": "watchdogs, health checks, background workers, and sidecars",
+      "public_equivalent": "runtime/parallel.py, cron/jobs.json, and scripts/*",
+      "handling": "sanitized-entrypoints",
+      "notes": "The public scripts validate contracts and never recover or control a real service."
+    },
+    {
+      "private_area": "browser, claims, messaging, sensor, and memory adapters",
+      "public_equivalent": "runtime/delivery.py and documented adapter seams",
+      "handling": "private-only-adapter",
+      "notes": "External side effects require private credentials and an approval gate."
+    }
+  ],
+  "private_python_paths": {
+    "bridge_and_service": [
+      "bridge/ag_bridge.py",
+      "bridge/ag_bridge_server.py",
+      "bridge/ag_bridge_worker.py",
+      "bridge/test_ag_bridge.py"
+    ],
+    "dashboard_core_and_loops": [
+      "dashboard/answer_ingest.py",
+      "dashboard/wellness_coach_context.py",
+      "dashboard/wellness_readiness.py",
+      "dashboard/command.py",
+      "dashboard/counts.py",
+      "dashboard/brief_context.py",
+      "dashboard/fetch_data.py",
+      "dashboard/gap_scanner.py",
+      "dashboard/generate.py",
+      "dashboard/horizon_scanner.py",
+      "dashboard/shared_ops_review.py",
+      "dashboard/care_tracker_fetch.py",
+      "dashboard/retrieval_client.py",
+      "dashboard/model_runtime.py",
+      "dashboard/wearable_adapter.py",
+      "dashboard/clinical_guidelines.py",
+      "dashboard/health_update_context.py",
+      "dashboard/questions.py",
+      "dashboard/reply_classifier.py",
+      "dashboard/reply_reconcile.py",
+      "dashboard/server.py",
+      "dashboard/state_store.py",
+      "dashboard/sync_calendar_projection.py",
+      "dashboard/system_health.py",
+      "dashboard/todo_audit.py",
+      "dashboard/vault_sync.py"
+    ],
+    "dashboard_tests": [
+      "dashboard/test_wellness_nutrition.py",
+      "dashboard/test_chief_of_staff_loop.py",
+      "dashboard/test_dashboard_truth.py",
+      "dashboard/test_fetch_data.py",
+      "dashboard/test_retrieval_client.py",
+      "dashboard/test_model_runtime.py",
+      "dashboard/test_wearable_adapter.py",
+      "dashboard/test_proactive_quiet_mode.py",
+      "dashboard/test_runtime_optimizations.py",
+      "dashboard/test_system_health.py",
+      "dashboard/test_vault_sync.py"
+    ],
+    "scripts_and_wrappers": [
+      "scripts/evidence_scout.py",
+      "scripts/evidence_scout_cron.py",
+      "scripts/room_climate_log.py",
+      "scripts/wellness_coach_context.py",
+      "scripts/quota_watch.py",
+      "scripts/brief_context.py",
+      "scripts/generate.py",
+      "scripts/health_adapter_mcp.py",
+      "scripts/memory_provider_check.py",
+      "scripts/horizon_scan.py",
+      "scripts/shared_ops_review.py",
+      "scripts/health_update_context.py",
+      "scripts/reply_reconcile.py",
+      "scripts/surgical_questions.py",
+      "scripts/message_notify.py",
+      "scripts/test_evidence_scout.py",
+      "scripts/test_room_climate_log.py",
+      "scripts/test_runtime_wrappers.py",
+      "scripts/todo_audit.py"
+    ],
+    "parked_retrieval_and_evaluation": [
+      "retrieval/scripts/build_eval_corpus.py",
+      "retrieval/scripts/check_option.py",
+      "retrieval/scripts/check_pipeline_status.py",
+      "retrieval/scripts/eval_embeddings.py",
+      "retrieval/scripts/eval_documents.py",
+      "retrieval/scripts/ingest_documents.py",
+      "retrieval/scripts/ingest_option.py",
+      "retrieval/scripts/query_documents.py",
+      "retrieval/scripts/query_option.py",
+      "retrieval/scripts/watch_ingest.py"
+    ],
+    "skill_scripts": [
+      "skills/domain/reference-grounding/scripts/build_corpus.py",
+      "skills/domain/reference-grounding/scripts/search_reference.py",
+      "skills/domain/room-climate/scripts/room_climate.py",
+      "skills/domain/chief-of-staff/scripts/source-url-capture.py",
+      "skills/domain/evidence-analysis/scripts/analyze_history.py",
+      "skills/domain/evidence-analysis/scripts/fetch_history.py"
+    ]
+  },
+  "excluded_by_design": [
+    "generated JSON projections and household timelines",
+    "auth, environment, database, session, log, cache, and vault state",
+    "private prompt values, persona values, reference corpora, and household-specific plans",
+    "lsp/node_modules and other vendored dependency trees",
+    "parked retrieval indexes and household evaluation corpora"
+  ]
+}
