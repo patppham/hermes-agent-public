@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "timezone": "${RUNTIME_TIMEZONE}",
+  "enabled_by_default": false,
+  "persona": "SOUL.md",
+  "runtime_guidance": ".hermes.md",
+  "prompt_root": "prompts/cron",
+  "jobs": [
+    {
+      "id": "daily-brief",
+      "role": "shared daily briefing",
+      "schedule": {"kind": "cron", "expr": "45 9 * * *"},
+      "execution": "judgment",
+      "prompt": "prompts/cron/daily-brief.md",
+      "skills": ["skills/daily-brief/SKILL.md", "skills/household-chief-of-staff/SKILL.md", "skills/email-triage/SKILL.md", "skills/reference-grounding/SKILL.md", "skills/action-adapter/SKILL.md"],
+      "script": "scripts/run_cycle.py",
+      "task": "briefing",
+      "delivery": {"destination": "example:non-production", "require_approval": true}
+    },
+    {
+      "id": "wellness-coach",
+      "role": "private wellness coaching",
+      "schedule": {"kind": "cron", "expr": "15 10 * * 1,3,5"},
+      "execution": "judgment",
+      "prompt": "prompts/cron/wellness-coach.md",
+      "skills": ["skills/wellness-evidence/SKILL.md"],
+      "script": "scripts/run_cycle.py",
+      "task": "coach",
+      "delivery": {"destination": "example:non-production", "require_approval": true}
+    },
+    {
+      "id": "household-health-update",
+      "role": "private household update",
+      "schedule": {"kind": "cron", "expr": "30 10 * * 6"},
+      "execution": "judgment",
+      "prompt": "prompts/cron/household-health-update.md",
+      "skills": ["skills/daily-brief/SKILL.md", "skills/wellness-evidence/SKILL.md", "skills/reference-grounding/SKILL.md"],
+      "script": "scripts/run_cycle.py",
+      "task": "briefing",
+      "delivery": {"destination": "example:non-production", "require_approval": true}
+    },
+    {
+      "id": "projection-refresh",
+      "role": "deterministic source projection",
+      "schedule": {"kind": "cron", "expr": "30 9 * * *"},
+      "execution": "no_agent",
+      "prompt": "prompts/cron/projection-refresh.md",
+      "skills": ["skills/source-projection/SKILL.md", "skills/live-dashboard/SKILL.md"],
+      "script": "scripts/run_projection.py",
+      "task": "projection",
+      "delivery": {"destination": "local-only", "require_approval": false}
+    },
+    {
+      "id": "surgical-questions",
+      "role": "bounded question check",
+      "schedule": {"kind": "cron", "expr": "0 10 * * *"},
+      "execution": "judgment",
+      "prompt": "prompts/cron/surgical-questions.md",
+      "skills": ["skills/surgical-questions/SKILL.md", "skills/milestone-dashboard/SKILL.md"],
+      "script": "scripts/run_cycle.py",
+      "task": "question",
+      "delivery": {"destination": "example:non-production", "require_approval": true}
+    },
+    {
+      "id": "system-health",
+      "role": "deterministic runtime health",
+      "schedule": {"kind": "cron", "expr": "0 9 * * 0"},
+      "execution": "no_agent",
+      "prompt": "prompts/cron/system-health.md",
+      "skills": ["skills/system-health/SKILL.md", "skills/runtime-architecture/SKILL.md", "skills/live-dashboard/SKILL.md"],
+      "script": "scripts/validate_public_surface.py",
+      "task": "health_check",
+      "delivery": {"destination": "local-only", "require_approval": false}
+    },
+    {
+      "id": "reply-reconciliation",
+      "role": "deterministic approval reconciliation",
+      "schedule": {"kind": "interval", "every": "60m"},
+      "execution": "no_agent",
+      "prompt": "prompts/cron/reply-reconciliation.md",
+      "skills": ["skills/reply-reconciliation/SKILL.md", "skills/state-reconciliation/SKILL.md", "skills/milestone-dashboard/SKILL.md"],
+      "script": "scripts/run_state_audit.py",
+      "task": "reconcile",
+      "delivery": {"destination": "local-only", "require_approval": false}
+    },
+    {
+      "id": "todo-audit",
+      "role": "deterministic completion audit",
+      "schedule": {"kind": "cron", "expr": "0 20 * * 3"},
+      "execution": "no_agent",
+      "prompt": "prompts/cron/todo-audit.md",
+      "skills": ["skills/state-reconciliation/SKILL.md", "skills/milestone-dashboard/SKILL.md"],
+      "script": "scripts/run_state_audit.py",
+      "task": "reconcile",
+      "delivery": {"destination": "local-only", "require_approval": false}
+    },
+    {
+      "id": "horizon-scan",
+      "role": "bounded proposal scout",
+      "schedule": {"kind": "cron", "expr": "0 15 * * 0"},
+      "execution": "judgment",
+      "prompt": "prompts/cron/horizon-scan.md",
+      "skills": ["skills/horizon-scan/SKILL.md", "skills/milestone-dashboard/SKILL.md", "skills/reference-grounding/SKILL.md", "skills/action-adapter/SKILL.md"],
+      "script": "scripts/run_cycle.py",
+      "task": "proposal",
+      "delivery": {"destination": "example:non-production", "require_approval": true}
+    },
+    {
+      "id": "runtime-watchdog",
+      "role": "deterministic local recovery contract",
+      "schedule": {"kind": "interval", "every": "5m"},
+      "execution": "no_agent",
+      "prompt": "prompts/cron/runtime-watchdog.md",
+      "skills": ["skills/system-health/SKILL.md", "skills/runtime-architecture/SKILL.md", "skills/live-dashboard/SKILL.md"],
+      "script": "scripts/validate_public_surface.py",
+      "task": "health_check",
+      "delivery": {"destination": "local-only", "require_approval": false}
+    },
+    {
+      "id": "annual-household-reminder",
+      "role": "private annual reminder",
+      "schedule": {"kind": "cron", "expr": "0 10 24 6 *"},
+      "execution": "judgment",
+      "prompt": "prompts/cron/annual-household-reminder.md",
+      "skills": ["skills/private-reminders/SKILL.md"],
+      "script": "scripts/run_cycle.py",
+      "task": "briefing",
+      "delivery": {"destination": "example:non-production", "require_approval": true}
+    },
+    {
+      "id": "evidence-scout",
+      "role": "read-only evidence scout",
+      "schedule": {"kind": "cron", "expr": "0 16 * * *"},
+      "execution": "judgment",
+      "prompt": "prompts/cron/evidence-scout.md",
+      "skills": ["skills/evidence-scout/SKILL.md", "skills/wellness-evidence/SKILL.md", "skills/reference-grounding/SKILL.md"],
+      "script": "scripts/run_cycle.py",
+      "task": "scout",
+      "delivery": {"destination": "example:non-production", "require_approval": true}
+    },
+    {
+      "id": "room-climate-log",
+      "role": "read-only local sensor history",
+      "schedule": {"kind": "interval", "every": "60m"},
+      "execution": "no_agent",
+      "prompt": "prompts/cron/room-climate-log.md",
+      "skills": ["skills/sensor-history/SKILL.md"],
+      "script": "scripts/run_projection.py",
+      "task": "projection",
+      "delivery": {"destination": "local-only", "require_approval": false}
+    },
+    {
+      "id": "quota-watch",
+      "role": "deterministic provider quota check",
+      "schedule": {"kind": "interval", "every": "30m"},
+      "execution": "no_agent",
+      "prompt": "prompts/cron/quota-watch.md",
+      "skills": ["skills/quota-watch/SKILL.md", "skills/system-health/SKILL.md"],
+      "script": "scripts/validate_public_surface.py",
+      "task": "health_check",
+      "delivery": {"destination": "local-only", "require_approval": false}
+    },
+    {
+      "id": "future-reminder-a",
+      "role": "private future reminder",
+      "schedule": {"kind": "once", "run_at": "${REMINDER_A_TIME}"},
+      "execution": "no_agent",
+      "prompt": "prompts/cron/future-reminder-a.md",
+      "skills": ["skills/private-reminders/SKILL.md"],
+      "script": "scripts/run_cycle.py",
+      "task": "briefing",
+      "delivery": {"destination": "example:non-production", "require_approval": true}
+    },
+    {
+      "id": "future-reminder-b",
+      "role": "private future reminder",
+      "schedule": {"kind": "once", "run_at": "${REMINDER_B_TIME}"},
+      "execution": "no_agent",
+      "prompt": "prompts/cron/future-reminder-b.md",
+      "skills": ["skills/private-reminders/SKILL.md"],
+      "script": "scripts/run_cycle.py",
+      "task": "briefing",
+      "delivery": {"destination": "example:non-production", "require_approval": true}
+    }
+  ]
+}
